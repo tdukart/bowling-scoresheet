@@ -1,21 +1,34 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from 'react';
+import { createStore, applyMiddleware } from 'redux';
+import { composeWithDevTools } from 'redux-devtools-extension';
+import { Provider } from 'react-redux';
+import thunkMiddleware from 'redux-thunk';
+import createHistory from 'history/createBrowserHistory';
+import { ConnectedRouter, routerMiddleware } from 'react-router-redux';
 
-class App extends Component {
-  render() {
-    return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
-        </header>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
-      </div>
-    );
-  }
+import reducers from './reducers';
+import Scoreboard from './components/Scoreboard';
+import RecordRoll from './components/RecordRoll';
+
+const history = createHistory();
+const middleware = routerMiddleware( history );
+
+const store = createStore(
+	reducers,
+	composeWithDevTools( applyMiddleware( middleware, thunkMiddleware ) )
+);
+
+export default class App extends React.Component {
+	render() {
+		return (
+			<Provider store={store}>
+				<ConnectedRouter history={history}>
+					<div>
+						<Scoreboard/>
+						<RecordRoll/>
+					</div>
+				</ConnectedRouter>
+			</Provider>
+		);
+	}
 }
-
-export default App;
